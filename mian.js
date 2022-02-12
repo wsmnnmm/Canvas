@@ -79,6 +79,7 @@ if (isTouchDevice) {
             ctx.fill();
             last = [e.clientX, e.clientY]
         }
+        //再擦除状态时
         if (clearing === true) {
             clearDown = true;
             ctx.clearRect(e.clientX, e.clientY, 24, 24)

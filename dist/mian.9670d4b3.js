@@ -208,7 +208,8 @@ if (isTouchDevice) {
       ctx.stroke();
       ctx.fill();
       last = [e.clientX, e.clientY];
-    }
+    } //再擦除状态时
+
 
     if (clearing === true) {
       clearDown = true;
