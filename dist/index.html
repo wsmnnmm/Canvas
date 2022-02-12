@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画板</title>
+    <link rel="stylesheet" href="/style.e308ff8e.css">
+<script src="/style.e308ff8e.js"></script></head>
+
+<body>
+    <canvas id="canvas">
+    </canvas>
+    <ul class="colors">
+        <li id="black"></li>
+        <li id="red"></li>
+        <li id="gray"></li>
+        <li id="green"></li>
+        <li id="blue"></li>
+        <li id="yellow"></li>
+        <li id="pink"></li>
+        <li id="white">擦除</li>
+    </ul>
+    <script>var canvas = document.getElementById("canvas");
+canvas.width = document.documentElement.clientWidth;
+canvas.height = document.documentElement.clientHeight;
+var ctx = canvas.getContext("2d");
+ctx.fillStyle = "black";
+ctx.strokeStyle = 'black';
+var painting = false;
+var last;
+ctx.lineWidth = 8;
+ctx.lineCap = 'round';
+on('click', '.colors', 'li', function (e) {
+  var parentChildren = e.target.parentElement.children;
+
+  for (var i = 0; i < parentChildren.length; i++) {
+    if (parentChildren[i] !== e.target) {
+      parentChildren[i].classList.remove("selected");
+    }
+  }
+
+  e.target.classList.add("selected");
+
+  if (e.target.id === "white") {
+    ctx.fillStyle = e.target.id;
+    ctx.strokeStyle = e.target.id;
+    ctx.lineWidth = 20;
+    e.target.classList.add("selected");
+    return;
+  }
+
+  ctx.fillStyle = e.target.id;
+  ctx.strokeStyle = e.target.id;
+  ctx.lineWidth = 8;
+});
+
+function on(eventType, element, selector, fn) {
+  if (!(element instanceof Element)) {
+    element = document.querySelector(element);
+  }
+
+  element.addEventListener(eventType, function (e) {
+    var el = e.target;
+
+    while (!el.matches(selector)) {
+      if (element === el) {
+        el = null;
+        break;
+      }
+
+      el = el.parentNode;
+    }
+
+    el && fn.call(el, e, el);
+  });
+  return element;
+}
+
+var isTouchDevice = 'ontouchstart' in document.documentElement;
+
+if (isTouchDevice) {
+  canvas.ontouchstart = function (e) {
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    last = [x, y];
+  };
+
+  canvas.ontouchmove = function (e) {
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    drawLine(last[0], last[1], x, y);
+    last = [x, y];
+  };
+} else {
+  canvas.onmousedown = function (e) {
+    painting = true;
+    ctx.beginPath();
+    ctx.arc(e.clientX, e.clientY, 1, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill();
+    last = [e.clientX, e.clientY];
+  };
+
+  canvas.onmousemove = function (e) {
+    if (painting === true) {
+      drawLine(last[0], last[1], e.clientX, e.clientY);
+      last = [e.clientX, e.clientY];
+    }
+  };
+
+  canvas.onmouseup = function () {
+    painting = false;
+  };
+}
+
+function drawLine(x1, y1, x2, y2) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}</script>
+</body>
+
+</html>
