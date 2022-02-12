@@ -34,12 +34,18 @@ button {
 @media screen and (max-width:500px) {
     .colors {
         flex-wrap: wrap;
+        top: 10px;
+        left: 10px;
     }
 
     .colors>li#download {
         position: relative;
         top: 0;
         left: 268px;
+    }
+
+    .selected {
+        border: 2px solid black;
     }
 }
 
