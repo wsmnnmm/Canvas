@@ -124,7 +124,10 @@ canvas.height = document.documentElement.clientHeight;
 var ctx = canvas.getContext("2d");
 ctx.fillStyle = "black";
 ctx.strokeStyle = 'black';
-var painting = false;
+var painting = true;
+var paintDown = false;
+var clearing = false;
+var clearDown = false;
 var last;
 ctx.lineWidth = 8;
 ctx.lineCap = 'round';
@@ -137,16 +140,23 @@ on('click', '.colors', 'li', function (e) {
     }
   }
 
-  e.target.classList.add("selected");
+  e.target.classList.add("selected"); //点击擦除时
 
-  if (e.target.id === "white") {
-    ctx.fillStyle = e.target.id;
-    ctx.strokeStyle = e.target.id;
-    ctx.lineWidth = 24;
-    e.target.classList.add("selected");
+  if (e.target.id === "clear") {
+    clearing = true;
+    painting = false;
     return;
+  } //点击下载图片时
+
+
+  if (e.target.id === "download") {
+    canvas.toBlob(function (blob) {
+      saveAs(blob, 'canvas');
+    });
   }
 
+  painting = true;
+  clearing = false;
   ctx.fillStyle = e.target.id;
   ctx.strokeStyle = e.target.id;
   ctx.lineWidth = 8;
@@ -191,23 +201,38 @@ if (isTouchDevice) {
   };
 } else {
   canvas.onmousedown = function (e) {
-    painting = true;
-    ctx.beginPath();
-    ctx.arc(e.clientX, e.clientY, 1, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.fill();
-    last = [e.clientX, e.clientY];
+    if (painting === true) {
+      paintDown = true;
+      ctx.beginPath();
+      ctx.arc(e.clientX, e.clientY, 1, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.fill();
+      last = [e.clientX, e.clientY];
+    }
+
+    if (clearing === true) {
+      clearDown = true;
+      ctx.clearRect(e.clientX, e.clientY, 24, 24);
+    }
   };
 
   canvas.onmousemove = function (e) {
-    if (painting === true) {
+    if (paintDown === true) {
       drawLine(last[0], last[1], e.clientX, e.clientY);
       last = [e.clientX, e.clientY];
+    }
+
+    if (clearDown === true) {
+      ctx.beginPath();
+      ctx.moveTo(last[0], last[1]);
+      ctx.lineTo(e.clientX, e.clientX);
+      ctx.clearRect(e.clientX, e.clientY, 24, 24);
     }
   };
 
   canvas.onmouseup = function () {
-    painting = false;
+    paintDown = false;
+    clearDown = false;
   };
 }
 
@@ -217,6 +242,11 @@ function drawLine(x1, y1, x2, y2) {
   ctx.lineTo(x2, y2);
   ctx.stroke();
 }
+
+clear.onclick = function () {
+  clearing = true;
+  painting = false;
+};
 },{}],"C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
