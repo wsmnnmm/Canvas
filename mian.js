@@ -110,8 +110,6 @@ if (isTouchDevice) {
         }
         if (clearDown === true) {
             ctx.beginPath();
-            ctx.moveTo(last[0], last[1])
-            ctx.lineTo(e.clientX, e.clientX)
             ctx.clearRect(e.clientX, e.clientY, 24, 24)
         }
     }
