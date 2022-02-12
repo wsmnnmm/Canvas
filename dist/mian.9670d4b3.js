@@ -190,14 +190,36 @@ if (isTouchDevice) {
   canvas.ontouchstart = function (e) {
     var x = e.touches[0].clientX;
     var y = e.touches[0].clientY;
-    last = [x, y];
+
+    if (painting === true) {
+      ctx.beginPath();
+      ctx.arc(x, y, 1, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.fill();
+      last = [x, y];
+    }
+
+    if (clearing === true) {
+      clearDown = true;
+      ctx.clearRect(x, y, 24, 24);
+    }
   };
 
   canvas.ontouchmove = function (e) {
     var x = e.touches[0].clientX;
     var y = e.touches[0].clientY;
-    drawLine(last[0], last[1], x, y);
-    last = [x, y];
+
+    if (painting === true) {
+      drawLine(last[0], last[1], x, y);
+      last = [x, y];
+    }
+
+    if (clearing === true) {
+      ctx.beginPath();
+      ctx.moveTo(last[0], last[1]);
+      ctx.lineTo(x, y);
+      ctx.clearRect(x, y, 24, 24);
+    }
   };
 } else {
   canvas.onmousedown = function (e) {

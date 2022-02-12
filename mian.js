@@ -61,13 +61,31 @@ if (isTouchDevice) {
     canvas.ontouchstart = (e) => {
         let x = e.touches[0].clientX
         let y = e.touches[0].clientY
-        last = [x, y]
+        if (painting === true) {
+            ctx.beginPath();
+            ctx.arc(x, y, 1, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.fill();
+            last = [x, y]
+        }
+        if (clearing === true) {
+            clearDown = true;
+            ctx.clearRect(x, y, 24, 24)
+        }
     }
     canvas.ontouchmove = (e) => {
         let x = e.touches[0].clientX
         let y = e.touches[0].clientY
-        drawLine(last[0], last[1], x, y)
-        last = [x, y]
+        if (painting === true) {
+            drawLine(last[0], last[1], x, y)
+            last = [x, y]
+        }
+        if (clearing === true) {
+            ctx.beginPath();
+            ctx.moveTo(last[0], last[1])
+            ctx.lineTo(x, y)
+            ctx.clearRect(x, y, 24, 24)
+        }
     }
 } else {
     canvas.onmousedown = (e) => {
