@@ -26,6 +26,9 @@ button {
     position: absolute;
     top: 20px;
     left: 20px;
+    border-radius: 8px;
+    background-color: white;
+    z-index: 1;
 }
 
 .colors>li {
