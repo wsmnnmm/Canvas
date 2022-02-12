@@ -117,79 +117,107 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
+})({"mian.js":[function(require,module,exports) {
+var canvas = document.getElementById("canvas");
+canvas.width = document.documentElement.clientWidth;
+canvas.height = document.documentElement.clientHeight;
+var ctx = canvas.getContext("2d");
+ctx.fillStyle = "black";
+ctx.strokeStyle = 'black';
+var painting = false;
+var last;
+ctx.lineWidth = 8;
+ctx.lineCap = 'round';
+on('click', '.colors', 'li', function (e) {
+  var parentChildren = e.target.parentElement.children;
 
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
-
-  return bundleURL;
-}
-
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
-
-    if (matches) {
-      return getBaseURL(matches[0]);
+  for (var i = 0; i < parentChildren.length; i++) {
+    if (parentChildren[i] !== e.target) {
+      parentChildren[i].classList.remove("selected");
     }
   }
 
-  return '/';
-}
+  e.target.classList.add("selected");
 
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
-}
-
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
-
-function updateLink(link) {
-  var newLink = link.cloneNode();
-
-  newLink.onload = function () {
-    link.remove();
-  };
-
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
-
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
+  if (e.target.id === "white") {
+    ctx.fillStyle = e.target.id;
+    ctx.strokeStyle = e.target.id;
+    ctx.lineWidth = 24;
+    e.target.classList.add("selected");
     return;
   }
 
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
+  ctx.fillStyle = e.target.id;
+  ctx.strokeStyle = e.target.id;
+  ctx.lineWidth = 8;
+});
 
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
+function on(eventType, element, selector, fn) {
+  if (!(element instanceof Element)) {
+    element = document.querySelector(element);
+  }
+
+  element.addEventListener(eventType, function (e) {
+    var el = e.target;
+
+    while (!el.matches(selector)) {
+      if (element === el) {
+        el = null;
+        break;
       }
+
+      el = el.parentNode;
     }
 
-    cssTimeout = null;
-  }, 50);
+    el && fn.call(el, e, el);
+  });
+  return element;
 }
 
-module.exports = reloadCSS;
-},{"./bundle-url":"C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/bundle-url.js"}],"style.css":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
+var isTouchDevice = 'ontouchstart' in document.documentElement;
 
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/css-loader.js"}],"C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+if (isTouchDevice) {
+  canvas.ontouchstart = function (e) {
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    last = [x, y];
+  };
+
+  canvas.ontouchmove = function (e) {
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    drawLine(last[0], last[1], x, y);
+    last = [x, y];
+  };
+} else {
+  canvas.onmousedown = function (e) {
+    painting = true;
+    ctx.beginPath();
+    ctx.arc(e.clientX, e.clientY, 1, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill();
+    last = [e.clientX, e.clientY];
+  };
+
+  canvas.onmousemove = function (e) {
+    if (painting === true) {
+      drawLine(last[0], last[1], e.clientX, e.clientY);
+      last = [e.clientX, e.clientY];
+    }
+  };
+
+  canvas.onmouseup = function () {
+    painting = false;
+  };
+}
+
+function drawLine(x1, y1, x2, y2) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+},{}],"C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -392,5 +420,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js"], null)
-//# sourceMappingURL=/style.e308ff8e.js.map
+},{}]},{},["C:/Users/Huerf/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js","mian.js"], null)
+//# sourceMappingURL=/mian.9670d4b3.js.map
