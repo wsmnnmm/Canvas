@@ -66,14 +66,14 @@ button {
     background: pink;
 }
 
-#clear {
+.colors>li#clear {
     background: pink;
     border-radius: 8px;
     text-align: center;
     width: 50px;
 }
 
-#download {
+.colors>li#download {
     background: pink;
     border-radius: 8px;
     text-align: center;
