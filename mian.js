@@ -100,6 +100,8 @@ if (isTouchDevice) {
         //再擦除状态时
         if (clearing === true) {
             clearDown = true;
+            ctx.fillStyle = "white"
+            ctx.strokeStyle = "white"
             ctx.clearRect(e.clientX, e.clientY, 24, 24)
         }
     }

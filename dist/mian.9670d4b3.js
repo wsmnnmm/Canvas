@@ -235,6 +235,8 @@ if (isTouchDevice) {
 
     if (clearing === true) {
       clearDown = true;
+      ctx.fillStyle = "white";
+      ctx.strokeStyle = "white";
       ctx.clearRect(e.clientX, e.clientY, 24, 24);
     }
   };
