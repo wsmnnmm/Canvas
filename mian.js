@@ -4,11 +4,8 @@ canvas.height = document.documentElement.clientHeight
 let ctx = canvas.getContext("2d");
 ctx.fillStyle = "black";
 ctx.strokeStyle = 'black';
-let painting = true;
-let paintDown = false;
-let clearing = false;
-let clearDown = false;
-let last
+let painting = false;
+let last;
 ctx.lineWidth = 8
 ctx.lineCap = 'round';
 
@@ -21,9 +18,10 @@ on('click', '.colors', 'li', (e) => {
     }
     e.target.classList.add("selected")
     //点击擦除时
-    if (e.target.id === "clear") {
-        clearing = true;
-        painting = false;
+    if (e.target.id === "white") {
+        ctx.fillStyle = "white"
+        ctx.strokeStyle = "white"
+        ctx.lineWidth = 24
         return
     }
     //点击下载图片时
@@ -31,9 +29,8 @@ on('click', '.colors', 'li', (e) => {
         canvas.toBlob(function (blob) {
             saveAs(blob, 'canvas')
         });
+        return
     }
-    painting = true;
-    clearing = false;
     ctx.fillStyle = e.target.id;
     ctx.strokeStyle = e.target.id;
     ctx.lineWidth = 8;
@@ -61,72 +58,40 @@ if (isTouchDevice) {
     canvas.ontouchstart = (e) => {
         let x = e.touches[0].clientX
         let y = e.touches[0].clientY
-        if (painting === true) {
-            ctx.beginPath();
-            ctx.arc(x, y, 1, 0, 2 * Math.PI);
-            ctx.stroke();
-            ctx.fill();
-            last = [x, y]
-        }
-        if (clearing === true) {
-            clearDown = true;
-            ctx.clearRect(x, y, 24, 24)
-        }
+        ctx.beginPath();
+        ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.fill();
+        last = [x, y]
     }
     canvas.ontouchmove = (e) => {
         let x = e.touches[0].clientX
         let y = e.touches[0].clientY
-        if (painting === true) {
-            drawLine(last[0], last[1], x, y)
-            last = [x, y]
-        }
-        if (clearing === true) {
-            ctx.beginPath();
-            ctx.moveTo(last[0], last[1])
-            ctx.lineTo(x, y)
-            ctx.clearRect(x, y, 24, 24)
-        }
+        drawLine(last[0], last[1], x, y)
+        last = [x, y]
     }
 } else {
     canvas.onmousedown = (e) => {
-        if (painting === true) {
-            paintDown = true;
-            ctx.beginPath();
-            ctx.arc(e.clientX, e.clientY, 1, 0, 2 * Math.PI);
-            ctx.stroke();
-            ctx.fill();
-            last = [e.clientX, e.clientY]
-        }
-        //再擦除状态时
-        if (clearing === true) {
-            clearDown = true;
-            ctx.fillStyle = "white"
-            ctx.strokeStyle = "white"
-            ctx.clearRect(e.clientX, e.clientY, 24, 24)
-        }
+        painting = true;
+        ctx.beginPath();
+        ctx.arc(e.clientX, e.clientY, 1, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.fill();
+        last = [e.clientX, e.clientY]
     }
     canvas.onmousemove = (e) => {
-        if (paintDown === true) {
+        if (painting === true) {
             drawLine(last[0], last[1], e.clientX, e.clientY)
             last = [e.clientX, e.clientY]
         }
-        if (clearDown === true) {
-            ctx.beginPath();
-            ctx.clearRect(e.clientX, e.clientY, 24, 24)
-        }
     }
     canvas.onmouseup = () => {
-        paintDown = false;
-        clearDown = false;
+        painting = false;
     }
 }
-function drawLine(x1, y1, x2, y2,) {
+function drawLine(x1, y1, x2, y2) {
     ctx.beginPath();
     ctx.moveTo(x1, y1)
     ctx.lineTo(x2, y2)
     ctx.stroke();
-}
-clear.onclick = () => {
-    clearing = true;
-    painting = false;
 }

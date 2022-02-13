@@ -38,15 +38,16 @@ button {
         left: 10px;
     }
 
+    .colors>li {
+        border-radius: 12px;
+    }
+
     .colors>li#download {
         position: relative;
         top: 0;
         left: 268px;
     }
 
-    .selected {
-        border: 2px solid black;
-    }
 }
 
 .colors>li {
@@ -87,7 +88,7 @@ button {
     background: pink;
 }
 
-.colors>li#clear {
+.colors>li#white {
     background: pink;
     border-radius: 8px;
     text-align: center;
